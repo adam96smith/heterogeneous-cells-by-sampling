@@ -8,6 +8,7 @@ from tifffile import imread
 import h5py
 import argparse
 from utils.quality_measures import custom_het_i_calc # for surface heterogeneity
+from scipy.ndimage import center_of_mass
 
 parser = argparse.ArgumentParser(description='Sample Real Fluorecence for Synthetic Images.')
 parser.add_argument('--mode', default='tif',
@@ -15,6 +16,7 @@ parser.add_argument('--mode', default='tif',
 args = parser.parse_args()
 
 assert args.mode in ['tif']
+sampling = (.49,.1,.1)
 
 data_dir = 'synthetic_data/lipid_bilayer_vesicles/'
 masks = [imread(f'{data_dir}mask_{str(i+1).zfill(5)}.{args.mode}')[0] for i in range(3)]
@@ -43,6 +45,45 @@ for i in range(3):
     axes[i, 2].imshow(specking_imgs[i][zs], cmap='inferno', vmin=vmin, vmax=vmax)
     axes[i, 3].imshow(width_scaling_imgs[i][zs], cmap='inferno', vmin=vmin, vmax=vmax)
     axes[i, 4].imshow(combined_imgs[i][zs], cmap='inferno', vmin=vmin, vmax=vmax)
+
+    # annotate surface heterogeneity
+    for v in np.unique(masks[i][zs])[1:]:
+
+        base_het = custom_het_i_calc(baseline_imgs[i],
+                                     (masks[i] == v).astype(int),
+                                     spacing=sampling,
+                                     max_depth=1.0,
+                                     operation='mean')[0]
+        spec_het = custom_het_i_calc(specking_imgs[i],
+                                     (masks[i] == v).astype(int),
+                                     spacing=sampling,
+                                     max_depth=1.0,
+                                     operation='mean')[0]
+        wsca_het = custom_het_i_calc(width_scaling_imgs[i],
+                                     (masks[i] == v).astype(int),
+                                     spacing=sampling,
+                                     max_depth=1.0,
+                                     operation='mean')[0]
+        comb_het = custom_het_i_calc(combined_imgs[i],
+                                     (masks[i] == v).astype(int),
+                                     spacing=sampling,
+                                     max_depth=1.0,
+                                     operation='mean')[0]
+        
+        cm = center_of_mass(masks[i][zs]==v)
+
+        if np.sum(masks[i][zs]==v) < 7500: # smaller vesicles annotate below
+            xres, yres = masks[i][zs].shape
+            X,Y = np.meshgrid(np.arange(xres), np.arange(yres))
+
+            cm = (np.max(Y[masks[i][zs]==v]) + 20, cm[1])
+
+        axes[i, 1].annotate(f'{base_het:.3f}', (cm[1],cm[0]), color='w', va='center',ha='center', weight='bold', fontsize=12.5)
+        axes[i, 2].annotate(f'{spec_het:.3f}', (cm[1],cm[0]), color='w', va='center',ha='center', weight='bold', fontsize=12.5)
+        axes[i, 3].annotate(f'{wsca_het:.3f}', (cm[1],cm[0]), color='w', va='center',ha='center', weight='bold', fontsize=12.5)
+        axes[i, 4].annotate(f'{comb_het:.3f}', (cm[1],cm[0]), color='w', va='center',ha='center', weight='bold', fontsize=12.5)
+
+        
 
 axes[0,0].set_title('Masks', fontsize=fs)
 axes[0,1].set_title('Baseline', fontsize=fs)
