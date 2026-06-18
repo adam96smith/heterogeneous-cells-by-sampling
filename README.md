@@ -30,11 +30,6 @@ The pipeline is organized into **four main execution stages**, each controlled b
 
 ## Pipeline Overview
 
-The full workflow consists of the following steps:
-
-1. **Synthetic Data Sampling**
-2. **Training Data Generation**
-
 Each step:
 
 * Is executed via a Bash script
@@ -72,10 +67,15 @@ cd main
 bash scripts/default/TrainData.sh
 ```
 
-### Purpose
+### 1. Sampling
+
+```
+python data_generator/default/GeneratorSampler.py
+...
+```
 
 Using ground truth annotations, the intensity values from real images are grouped based on intervals of a distance map.
-The formatted data is used to texture synthetic images (stored in `data_generator/sampled_data/data_A549/`)
+The formatted data is used to texture synthetic images (stored in `data_generator/sampled_data/`)
 
 ### Parameters
 
@@ -94,12 +94,45 @@ main/config/global_parameters.yaml
 
 **Recommended**: DX should be no lower than 2x the in-plane sampling.
 
-## 2. Training Data Preparation
+### 2. Mask Generation
 
 **Script:**
 
-```bash
-bash scripts/default/TrainData.sh
+```
+python data_generator/default/GeneratorMask.py
+...
+```
+
+### Purpose
+
+Generates cell shapes used as input to texturing process.
+
+### Parameters
+
+Located in:
+
+```
+main/config/synth_parameters.yaml
+```
+
+| Parameter                | Description                                                |
+| ------------------------ | ---------------------------------------------------------- |
+|  `IMAGE_SIZE`            | Size of synthetic images                                   |
+|  `CELL_N`                | Max. number of cells to add to synthetic volume (range)    |
+|  `CELL_R`                | A range of value to sample for each cell radius            |
+|  `CELL_SEPARATION`       | Separation parameter. >1 no contact, <1 overlap            |
+|  `CELL_COUPLING_CHANCE`  | Probability of new cell coupling with existing cell        |
+|  `DEFORM_1/2`            | [Grid points, Amplitude]  of deformation with Perlin noise |
+
+**Note:** Cells will be added until maximum number reached, or constraints do not allow any more cells to be added to volume.
+
+### 2. Image Generation
+
+**Script:**
+
+```
+python data_generator/default/GeneratorImage.py
+...
 ```
 
 ### Purpose
