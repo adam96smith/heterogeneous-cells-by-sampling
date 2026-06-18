@@ -10,8 +10,7 @@ The goal is to leverage synthetic data to improve segmentation performance on re
 
 ```
 .
-├── Fluo-C3DH-A549/               # Test data from Cell Tracking Challenge
-├── Fluo-C3DH-A549-train/         # Annotated training data from Cell Tracking Challenge
+├── lipid_bilayer_vesicles/       # Real data sample with annotated slice used for sampling
 ├── main/                         # All executable scripts (run commands from here)
 │   ├── scripts/
 │   │   └── default/
