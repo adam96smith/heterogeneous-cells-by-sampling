@@ -4,6 +4,8 @@ This repository provides a resources to generate synthetic cell images by sampli
 The goal is to leverage synthetic data to improve segmentation performance on real-world images.
 
 ![Example of synthetic cells with heterogeneous patterns.](main/figs/example.png)
+
+Figure: Example slices of synthetic lipid bilayer vesicles using the sample-based method with augmentations for introducing heterogeneity. The measured surface heterogeneity is annotated for each synthetic vesicle.
 ---
 
 ## Repository Structure
