@@ -3,8 +3,6 @@
 This repository provides a resources to generate synthetic cell images by sampling.
 The goal is to leverage synthetic data to improve segmentation performance on real-world images.
 
-The pipeline is organized into **four main execution stages**, each controlled by a Bash script and parameterized via configuration files.
-
 ![Example of synthetic cells with heterogeneous patterns.](main/figs/example.png)
 ---
 
