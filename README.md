@@ -122,7 +122,7 @@ main/config/synth_parameters.yaml
 |  `CELL_R`                | A range of value to sample for each cell radius            |
 |  `CELL_SEPARATION`       | Separation parameter. >1 no contact, <1 overlap            |
 |  `CELL_COUPLING_CHANCE`  | Probability of new cell coupling with existing cell        |
-|  `DEFORM_1/2`            | [Grid points, Amplitude]  of deformation with Perlin noise |
+|  `DEFORM_1/2`            | [Grid points, Amplitude] of deformation with Perlin noise (**in pixels**) |
 
 **Note:** Cells will be added until maximum number reached, or constraints do not allow any more cells to be added to volume.
 
@@ -137,27 +137,34 @@ python data_generator/default/GeneratorImage.py
 
 ### Purpose
 
-This script runs GeneratorMask.py to get cell shapes, GeneratorImage.py to get synthetic images and GeneratorCurveSeg.py for curvature mask.
-All images are stored in `synthetic_data/A549/`, with images inside `custom_texture/`. 
-**Note:**: Custom script for A549 cells is 'data_generator/custom_A549/GeneratorMask.py`, the alternative in `default/` generates generic masks with specified shape.
-
-
-### Parameters
+Generates synthetic cell using the input masks to guide sampling. Images are augmented to produce heterogeneous patterns.
+All images are stored in `synthetic_data/lipid_bilayer_vesicles/`, with images inside `*_texture/`. 
 
 Located in:
 
 ```
-main/config/synth_parameters.yaml
+main/config/synth_parameters*.yaml
 ```
+### Sampling Parameters
 
 | Parameter        | Description                                      |
 | ---------------- | ------------------------------------------------ |
-|  `IMAGE_SIZE`    | Size of synthetic images                         |
 |  `DISTMAP_BLUR`  | If True, blur the distance map used in sampling  |
 |  `DISTMAP_SIG`   | Sigma used to blur distances (**in $\mu m$**)    |
 |  `GAUSSIAN_BLUR` | If True, apply blur to the final image           |
 |  `GAUSSIAN_SIG`  | Sigma used to blur image (**in pixels**)         |
 
 **Note:** Applying a blur to the distance map reduces the block effect caused by sampling at distance intervals.
+
+### Augmentation Parameters
+
+| Parameter           | Description                                         |
+| ------------------- | --------------------------------------------------- |
+|  `WIDTH_SCALE_P`    | Probability of applying width scaling augmentation  |
+|  `WIDTH_SCALE_a`    | Amplitude of width scaling augmentation             |
+|  `SPECKLING_PROB`   | Probability of applying speckling augmentation      |
+|  `SPECKLING_alpha`  | Scaling parameter for brightening                   |
+|  `SPECKLING_p`      | Fraction of pixels to apply brightening to          |
+|  `SPECKLING_sigma`  | Blurring parameter for scalar maps                  |
 
 
